@@ -7,7 +7,6 @@ class View:
 		self.update_frame(frame)
 		self.background_color = pygame.Color(0, 0, 0, 0)
 		self.set_needs_display()
-		self.surface = pygame.Surface(self.frame.size)
 
 	def update_frame(self, frame):
 		self.frame = frame
