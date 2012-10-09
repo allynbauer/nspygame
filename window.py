@@ -8,7 +8,7 @@ class Window(View):
 
 	def send_event(self, event):
 		if (event.type == MOUSEBUTTONDOWN):
-			self.set_needs_display()
+			self.set_needs_display(pygame.Rect(event.pos, (1, 1)))
 
 	def blit(self, surface):
 		if (self.invalid_rect != None):

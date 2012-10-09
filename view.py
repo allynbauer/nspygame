@@ -10,6 +10,7 @@ class View:
 
 	def update_frame(self, frame):
 		self.frame = frame
+		self.surface = None
 		self.set_needs_display()
 
 	def set_needs_display(self, rect = None):
@@ -19,7 +20,8 @@ class View:
 			self.invalid_rect = rect
 
 		for subview in self.subviews:
-			subview.set_needs_display(self.bounds().clip(subview.frame))
+			if (self.invalid_rect.colliderect(subview.frame)):
+				subview.set_needs_display(self.bounds().clip(subview.frame))
 
 	def bounds(self):
 		return pygame.Rect((0, 0), self.frame.size)
@@ -27,11 +29,14 @@ class View:
 	def add_subview(self, subview):
 		self.subviews.append(subview)
 		subview.superview = self
+		self.set_needs_display(subview.frame)
 
 	def draw(self, rect):
-		self.surface = pygame.Surface(self.frame.size)
+		if (self.surface == None):
+			self.surface = pygame.Surface(self.frame.size)
 		self.invalid_rect = None
-		self.surface.fill(self.background_color)
+		if (rect == self.frame):
+			self.surface.fill(self.background_color)
 
 
 

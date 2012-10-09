@@ -48,6 +48,7 @@ class Label(View):
 
     def draw(self, rect):
         View.draw(self, rect)
+        print "drawing label with text {}".format(self.text)
         self.text_surface = self.get_font().render(self.text, False, self.text_color)
         if (self.text_alignment == 'left'):
             text_origin = (0, 0)
