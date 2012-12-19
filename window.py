@@ -6,15 +6,30 @@ class Window(View):
 	def __init__(self, frame):
 		View.__init__(self, frame)
 
-	def send_event(self, event):
-		if (event.type == MOUSEBUTTONDOWN):
-			self.set_needs_display(pygame.Rect(event.pos, (1, 1)))
+	def should_process_responders(self, event, view):
+		if hasattr(event, 'pos'):
+			return view.frame.collidepoint(event.pos)
+		elif event.type == pygame.KEYDOWN:
+			return True
+		elif event.type == pygame.KEYUP:
+			return True			
+		return False
 
-	def blit(self, surface):
-		if (self.invalid_rect != None):
-			self.draw(self.invalid_rect)
-			for subview in self.subviews:
-				if (subview.invalid_rect != None):
-					subview.draw(subview.invalid_rect)
-					self.surface.blit(subview.surface, subview.frame)
-			surface.blit(self.surface, self.frame)
+	def process_responders(self, event, view):
+		if (self.should_process_responders(event, view)):
+			responders = filter(lambda responder: responder.responds_to_event(event), view.event_responders)
+			for responder in responders:
+				if callable(responder.callback):
+					callback = responder.callback
+				else:
+					callback = getattr(view, responder.callback)
+				callback(event)
+
+	def send_event(self, event):
+		self.process_responders(event, self)
+		for subview in self.subviews:
+			self.process_responders(event, subview)
+				
+
+	def refresh(self):
+		self.draw(None)

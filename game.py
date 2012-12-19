@@ -1,15 +1,20 @@
 import pygame, sys
-import window, view, label
+import window, view, label, button
 from pygame.locals import *
 from label import *
+from event_responder import *
+from animation_queue import *
+from clock import *
 
-class Game:
+class Game(object):
 	def __init__(self, title = 'Untitled', size = (100, 100)):
 		self.size = size
 		self.title = title
 		self.fps = 60
 		self.time_elapsed = 0
 		self.key_window = None
+		self.main_queue = AnimationQueue()
+		self.clock = Clock()
 
 	# install the given window on the next run loop
 	def install_window(self, window):
@@ -43,10 +48,14 @@ class Game:
 			raise Exception('Must call install_window to provide a key_window')
 		self.init_pygame()
 		while True:
+			self.clock_tick()
+			pygame.event.pump()
 			for event in pygame.event.get():
 				self.send_event(event)
-			self.key_window.blit(self.game_surface)
+			self.key_window.refresh()
+			self.game_surface.blit(self.key_window.surface, self.key_window.frame)
 			pygame.display.flip()
+			self.main_queue.tick(self.clock)
 
 
 def gen_label(text, origin, text_alignment):
@@ -56,25 +65,60 @@ def gen_label(text, origin, text_alignment):
 	l.update_text(text)
 	return l
 
+left = False
+can_change = True
+
+def toggle():
+	global left
+	can_change = True
+	left = not left
+
+def animation():
+	global left
+	print left
+	def animation_right():
+		return lambda view: view.frame(250, 50, 50, 50)
+	def animation_left():
+	 	return lambda view: view.frame(50, 50, 50, 50)
+	if left:
+		return animation_left()
+	else:
+		return animation_right()
+
+
+def test(event):
+	global game, can_change
+	if can_change:
+		green.add_animation(game.main_queue, float(1.5), animation(), toggle)
+		can_change = not can_change
+
+
 if __name__ == '__main__':
 
-	game = Game('Test Game', (250, 250))
-	window = window.Window(pygame.Rect(0, 0, 250, 250))
+	game = Game('Test Game', (500, 500))
+	window = window.Window(pygame.Rect(0, 0, 500, 500))
+	window.add_event_responder(KeyDownResponder((K_a), None, 0, test))
 	green = view.View(pygame.Rect(50, 50, 50, 50))
 	green.background_color = pygame.Color(0, 255, 0, 0)
 	window.add_subview(green)
 
 	label = gen_label('Testing label left align', (0, 150), 'left')
-	label.text_color = (255, 0, 0)
+	label.background_color = pygame.Color(0,255,255,0)
+	label.text_color = pygame.Color(255, 0, 0, 1)
 	window.add_subview(label)
 
 	label = gen_label('Testing label center align', (0, 170), 'center')
-	label.text_color = (0, 255, 0)
+	label.text_color = pygame.Color(0, 255, 0, 1)
 	window.add_subview(label)
 
 	label = gen_label('Testing label right align', (0, 190), 'right')
-	label.text_color = (0, 0, 255)
+	label.text_color = pygame.Color(0, 0, 255, 1)
 	window.add_subview(label)
+
+	button = button.Button(pygame.Rect((0, 210), (100, 50)), {'text': 'Test Button'})
+	button.background_color = pygame.Color(255,255,0,0)
+	button.autosize()
+	window.add_subview(button)
 
 	game.install_window(window)
 	game.run()

@@ -28,9 +28,11 @@ class Label(View):
         f.height = height
         self.update_frame(f)
 
+    def get_text_size(self):
+    	return self.get_font().size(self.text)
+
     def autofit_height(self):
-        size = self.get_font().size(self.text)
-        self.update_height(size[1])
+        self.update_height(self.get_text_size()[1])
         self.set_needs_display()
 
     def update_text(self, text):
@@ -48,7 +50,6 @@ class Label(View):
 
     def draw(self, rect):
         View.draw(self, rect)
-        print "drawing label with text {}".format(self.text)
         self.text_surface = self.get_font().render(self.text, False, self.text_color)
         if (self.text_alignment == 'left'):
             text_origin = (0, 0)
