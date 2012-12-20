@@ -22,30 +22,34 @@ class Button(View):
 		self.add_event_responder(MouseButtonDownResponder('toggle'))
 		self.add_event_responder(MouseButtonUpResponder('toggle'))
 
-	def toggle(self, event):
-		self.active = not self.active
-		print self.active
-
+	def create_surfaces(self):
 		if True and self.normal_view.surface == None:
 			self.normal_view.surface = self.rounded_rect_surface()
-			#self.normal_view.set_needs_display()
 			self.normal_view.background_color = pygame.Color(0,255,0,0)
+			print "creating normal surface"
+
 
 		if True and self.active_view.surface == None:
 			self.active_view.surface = self.rounded_rect_surface((25,25,25))
-			#self.active_view.set_needs_display()
+			print "creating active surface"
+
+	def toggle(self, event):
+		self.active = not self.active
+		self.create_surfaces()
+
 		if self.active:
    			self.normal_view.remove_from_superview()
    			self.add_subview(self.active_view)
 			if not self.button_is_rounded_rect:
 				self.label_view.text_color = self.active_text_color
+			print "active view added"
    		else:
    			self.active_view.remove_from_superview()
    			self.add_subview(self.normal_view)
 			if not self.button_is_rounded_rect:
 				self.label_view.text_color = self.text_color
+			print "normal view added"
 
-		print self.subviews	
 		self.set_needs_display()
 
    	def autosize(self):
@@ -115,6 +119,7 @@ class Button(View):
 
    	def draw(self, rect):		
 		self.label_view.bring_to_top()
+		print "{} {}".format(self.subviews, rect)
 		View.draw(self, rect)
 
 
