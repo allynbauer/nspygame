@@ -69,7 +69,7 @@ left = False
 can_change = True
 
 def toggle():
-	global left
+	global left, can_change
 	can_change = True
 	left = not left
 
@@ -77,7 +77,7 @@ def animation():
 	global left
 	print left
 	def animation_right():
-		return lambda view: view.frame(250, 50, 50, 50)
+		return lambda view: view.frame(250, 50, 75, 75)
 	def animation_left():
 	 	return lambda view: view.frame(50, 50, 50, 50)
 	if left:
@@ -89,7 +89,7 @@ def animation():
 def test(event):
 	global game, can_change
 	if can_change:
-		green.add_animation(game.main_queue, float(1.5), animation(), toggle)
+		green.add_animation(game.main_queue, float(1), animation(), toggle)
 		can_change = not can_change
 
 
