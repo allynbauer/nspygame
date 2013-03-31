@@ -1,5 +1,6 @@
 import pygame, view
 from view import *
+from pygame import *
 
 class Label(View):
     def __init__(self, frame):
@@ -15,7 +16,7 @@ class Label(View):
     def load_font(self):
         font = None
         path = pygame.font.match_font(self.font_name, False, False)
-        if (path != None):
+        if path is not None:
             font = pygame.font.Font(path, self.size)
         else:
             path = os.path.join('fonts', self.font_name)
@@ -44,18 +45,18 @@ class Label(View):
    		self.font = None
 
     def get_font(self):
-        if (self.font == None):
+        if self.font is None:
             self.font = self.load_font()
         return self.font
 
     def draw(self, rect):
         View.draw(self, rect)
-        self.text_surface = self.get_font().render(self.text, False, self.text_color)
-        if (self.text_alignment == 'left'):
+        self.text_surface = self.get_font().render(self.text, False, self.text_color, self.background_color)
+        if self.text_alignment == 'left':
             text_origin = (0, 0)
-        elif (self.text_alignment == 'center'):
+        elif self.text_alignment == 'center':
             text_origin = ((self.frame.width - self.text_surface.get_width()) / 2.0, 0)
-        elif (self.text_alignment == 'right'):
+        elif self.text_alignment == 'right':
             text_origin = (self.frame.width - self.text_surface.get_width(), 0)
         else:
             raise Exception('text_alignment value \'{}\' invalid'.format(self.text_alignment))

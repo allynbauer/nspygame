@@ -5,7 +5,7 @@ class AnimationQueue(object):
 		self.animations = []
 
 	def add_animation(self, animation):
-		assert animation != None
+		assert animation is not None
 		animation.queue = self
 		animation.began = pygame.time.get_ticks() # TODO: replace with clock
 		self.animations.append(animation)

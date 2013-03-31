@@ -3,7 +3,7 @@ import pygame
 class EventResponder(object):
 	def __init__(self, callback):
 		self.callback = callback
-		assert callable(callback) "callback must be callable"
+		assert callable(callback), "callback must be callable"
 		self.type = None
 
 	def responds_to_event(self, event):
